@@ -23,10 +23,10 @@ def books_in_library(library_name):
     for book in books:
         print(book.title)
 
-# Retrieve the librarian for a specific library
+# Retrieve the librarian for a specific library using OneToOneField
 def librarian_for_library(library_name):
     library = Library.objects.get(name=library_name)
-    librarian = library.librarian
+    librarian = Librarian.objects.get(library=library)
     print(f'Librarian for {library_name} Library: {librarian.name}')
 
 # Example usage
