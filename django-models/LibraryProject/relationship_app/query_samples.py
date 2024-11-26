@@ -8,8 +8,9 @@ django.setup()
 
 # Query all books by a specific author
 def books_by_author(author_name):
-    author = Author.objects.get(name=author_name)
-    books = author.books.all()
+    author = Author.objects.get(name=author_name) 
+    books = Book.objects.filter(author=author) # Can use this
+    books = author.books.all() # and can use this also
     print(f'Books by {author_name}:')
     for book in books:
         print(book.title)
