@@ -25,7 +25,8 @@ def books_in_library(library_name):
 
 # Retrieve the librarian for a specific library using OneToOneField
 def librarian_for_library(library_name):
-    library = Library.objects.get(name=library_name)
+    library = Library.objects.get(name=library_name) # Can use this
+    librarian = library.librarian # and can use this also
     librarian = Librarian.objects.get(library=library)
     print(f'Librarian for {library_name} Library: {librarian.name}')
 
