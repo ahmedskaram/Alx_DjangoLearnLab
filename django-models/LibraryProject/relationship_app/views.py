@@ -17,7 +17,7 @@ class LibraryDetailView(DetailView):
     context_object_name = 'library'
 
 # -----------------------------------------------------------------------------------------
-
+# In this task we will not use these views (login, logout) because they are built-in.
 from django.contrib.auth.views import LoginView
 
 class UserLoginView(LoginView):
