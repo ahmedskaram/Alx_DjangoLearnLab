@@ -43,3 +43,12 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
+# -------------------------------------------------------------------------------------------
+
+class UserProfile(models.Model):
+    role = models.CharField(max_length=100 , choices=[('Librarian', 'Librarian'), ('Admin', 'Admin'), ('Member', 'Member')])
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            UserProfile.objects.create(user=instance)
