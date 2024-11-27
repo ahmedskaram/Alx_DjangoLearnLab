@@ -60,25 +60,32 @@ class Register(CreateView):
 
 # -------------------------------------------------------------------------------------------
 
-from django.contrib.auth.decorators import user_passes_test
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render
+from django.contrib.auth.decorators import user_passes_tes
 
-def check_role(role):
-    def decorator(user):
-        return user.is_authenticated and user.userprofile.role == role
-    return decorator
+def is_admin(user):
+    return user.userprofile.role == 'Admin'
 
-@user_passes_test(check_role('Admin'))
+@user_passes_test(is_admin)
 def admin_view(request):
-    return HttpResponse("This is the Admin view.")
+    # This view is only accessible to users with the 'Admin' role
+    return render(request, 'relationship_app/admin_view.html')  # You can customize the template as needed
 
-@user_passes_test(check_role('Librarian'))
+def is_librarian(user):
+    return user.userprofile.role == 'Librarian'
+
+@user_passes_test(is_librarian)
 def librarian_view(request):
-    return HttpResponse("This is the Librarian view.")
+    # This view is only accessible to users with the 'Librarian' role
+    return render(request, 'relationship_app/librarian_view.html') 
 
-@user_passes_test(check_role('Member'))
+def is_member(user):
+    return user.userprofile.role == 'Member'
+
+@user_passes_test(is_member)
 def member_view(request):
-    return HttpResponse("This is the Member view.")
+    # This view is only accessible to users with the 'Member' role
+    return render(request, 'relationship_app/member_view.html')
 
 # -------------------------------------------------------------------------------------------
 
