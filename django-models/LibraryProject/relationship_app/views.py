@@ -1,4 +1,4 @@
-# 
+# Function-based view to list all books in a specific library.
 from django.shortcuts import render
 from .models import Book
 
@@ -9,6 +9,7 @@ def list_books(request):
 
 # -----------------------------------------------------------------------------------------
 
+#Class-based view to detail view in a specific library.
 from django.views.generic.detail import DetailView
 from .models import Library
 
@@ -56,6 +57,28 @@ class Register(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'relationship_app/register.html'
+
+# -------------------------------------------------------------------------------------------
+
+from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import render, HttpResponse
+
+def check_role(role):
+    def decorator(user):
+        return user.is_authenticated and user.userprofile.role == role
+    return decorator
+
+@user_passes_test(check_role('Admin'))
+def admin_view(request):
+    return HttpResponse("This is the Admin view.")
+
+@user_passes_test(check_role('Librarian'))
+def librarian_view(request):
+    return HttpResponse("This is the Librarian view.")
+
+@user_passes_test(check_role('Member'))
+def member_view(request):
+    return HttpResponse("This is the Member view.")
 
 # -------------------------------------------------------------------------------------------
 
