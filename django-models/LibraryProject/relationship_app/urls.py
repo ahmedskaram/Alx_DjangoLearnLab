@@ -1,3 +1,4 @@
+# Link to view all books and show details about a particular library
 from django.urls import path
 from .views import list_books, LibraryDetailView
 
@@ -9,6 +10,7 @@ urlpatterns = [
 
 # ---------------------------------------------------------------------------------------
 
+# Link to view registration, login, logout
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from . import views
@@ -22,6 +24,7 @@ urlpatterns = [
 
 # -----------------------------------------------------------------------------------------
 
+# Link to view admin, librarian, member
 from django.urls import path
 from . import views
 
