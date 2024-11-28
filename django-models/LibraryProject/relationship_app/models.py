@@ -41,14 +41,8 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='Member')
 
-    # This function has the same role in the signals.py file.
-    def create_user_profile(sender, instance, created, **kwargs):
-        if created:
-            UserProfile.objects.create(user=instance)
-
     def __str__(self):
         return f"{self.user.username} - {self.role}"
 
-# -------------------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------------
