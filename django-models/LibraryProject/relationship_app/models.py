@@ -11,6 +11,7 @@ class Book(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
 
     # Custom Permissions
+    # Still need code group permissions.
     class Meta:
         permissions = [
             ("can_add_book", "Can add a book"),
