@@ -4,10 +4,20 @@ class Book(models.Model):
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=100)
     publication_year = models.IntegerField()
+
+    class Meta:
+        permissions = [
+            ("can_view", "Can view articles"),
+            ("can_edit", "Can edit articles"),
+            ("can_create", "Can create articles"),
+            ("can_delete", "Can delete articles"),
+        ]
     
     def __str__(self):
         return self.title
+
 # -------------------------------------------------------------------------------------------
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -37,3 +47,23 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(username, email, password=password, **extra_fields)
 
+# -------------------------------------------------------------------------------------------
+
+from django.contrib.auth.models import Group, Permission
+# Create groups
+editors_group, created = Group.objects.get_or_create(name='Editors')
+viewers_group, created = Group.objects.get_or_create(name='Viewers')
+admins_group, created = Group.objects.get_or_create(name='Admins')
+
+
+# Assign permissions to groups
+can_edit_permission = Permission.objects.get(codename='can_edit')
+can_create_permission = Permission.objects.get(codename='can_create')
+can_view_permission = Permission.objects.get(codename='can_view')
+can_delete_permission = Permission.objects.get(codename='can_delete')
+
+editors_group.permissions.add(can_edit_permission, can_create_permission)
+viewers_group.permissions.add(can_view_permission)
+admins_group.permissions.add(can_edit_permission, can_create_permission, can_view_permission, can_delete_permission)
+
+# -------------------------------------------------------------------------------------------
