@@ -1,0 +1,5 @@
+<form method="POST" action="/submit-form/">
+    {% csrf_token %}
+    <input type="text" name="input_field">
+    <button type="submit">Submit</button>
+</form>

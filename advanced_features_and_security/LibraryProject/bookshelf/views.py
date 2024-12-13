@@ -15,3 +15,13 @@ def edit_book(request, book_id):
         pass
     return render(request, 'books/edit_book.html', {'book': book})
 
+# -------------------------------------------------------------------------------------------
+from django.shortcuts import render
+from .models import Book
+
+def search_books(request):
+    query = request.GET.get('q', '')
+    books = Book.objects.filter(title__icontains=query)
+    return render(request, 'bookshelf/book_list.html', {'books': books})
+
+# -------------------------------------------------------------------------------------------
