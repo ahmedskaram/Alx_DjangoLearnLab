@@ -1,9 +1,9 @@
 from rest_framework import routers
-from .views import ListView, DetailView, CreateView, UpdateView, DeleteView , AuthorView
+from .views import BookListView, DetailView, CreateView, UpdateView, DeleteView , AuthorView
 from django.urls import path ,include
 
 router = routers.DefaultRouter()
-router.register(r'books', ListView, basename='books')
+router.register(r'books', BookListView, basename='books')
 router.register(r'books/<int:pk>', DetailView, basename='books_detail')
 router.register(r'books/create', CreateView, basename='create')
 router.register(r'books/update/<int:pk>', UpdateView, basename='update')
