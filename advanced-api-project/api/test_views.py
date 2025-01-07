@@ -1,89 +1,79 @@
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
-from django.urls import reverse
-from .models import Book
-from .serializers import BookSerializer
+from django.urls import reverse , path , include
+from api.models import Book , Author
 
-class BookAPITests(APITestCase):
+# Create your tests here.
 
+# This Python class contains test cases for creating, retrieving, updating, and deleting books using
+# Django REST framework API testing.
+class BookAPITestCase(APITestCase):
+    urlpatterns = [
+        path('api/', include('api.urls')),
+        ]
     def setUp(self):
-        """
-        إعداد بيانات الاختبار.
-        """
-        self.book1 = Book.objects.create(title="Book One", author="Author One", publication_year=2020)
-        self.book2 = Book.objects.create(title="Book Two", author="Author Two", publication_year=2021)
-
-        self.book_list_url = reverse('book-list')  # URL الرئيسي للأدوات
-        self.book_detail_url = lambda pk: reverse('book-detail', args=[pk])  # URL للتفاصيل باستخدام الـ id
-
-    def test_get_books_list(self):
-        """
-        اختبار عرض قائمة الكتب.
-        """
-        response = self.client.get(self.book_list_url)
-        books = Book.objects.all()
-        serializer = BookSerializer(books, many=True)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, serializer.data)
+        self.author = Author.objects.create(name='Test Author')
+        self.client = APIClient()
+        self.client.login(username='testuser', password='testpassword')
+        self.book_data = {
+            'title': 'Test Book',
+            'author': 'Test Author',
+            'publication_year': 2021
+        }
+        self.create_url = reverse('CreateView')
+        self.detail_url = reverse('book_detail', args=[1])
+        self.update_url = reverse('update', args=[1])
+        self.delete_url = reverse('delete', args=[1])
 
     def test_create_book(self):
-        """
-        اختبار إضافة كتاب جديد.
-        """
-        data = {
-            "title": "New Book",
-            "author": "New Author",
-            "publication_year": 2022
-        }
-        response = self.client.post(self.book_list_url, data)
+        data = {'title': 'New Book', 'author': 'New Author', 'publication_year': 2022}
+        response = self.client.post(self.book_list_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Book.objects.count(), 3)  # تأكد من أن الكتاب تم إضافته
+        self.assertEqual(response.data['title'], data['title'])
 
+        
+    def test_get_books(self):
+        response = self.client.get(self.detail_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)  # Verify two books are returned
+
+        
     def test_update_book(self):
-        """
-        اختبار تعديل كتاب.
-        """
-        data = {
-            "title": "Updated Book",
-            "author": "Updated Author",
-            "publication_year": 2023
-        }
-        response = self.client.put(self.book_detail_url(self.book1.id), data)
+        update_url = reverse('update', args=[self.book_data.id])
+        data = {'title': 'Updated Book'}
+        response = self.client.patch(update_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.book1.refresh_from_db()
-        self.assertEqual(self.book1.title, "Updated Book")
-
+        self.assertEqual(response.data['title'], data['title'])
+        
     def test_delete_book(self):
-        """
-        اختبار حذف كتاب.
-        """
-        response = self.client.delete(self.book_detail_url(self.book1.id))
+        delete_url = reverse('book-detail', args=[self.book1.id])
+        response = self.client.delete(delete_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(Book.objects.count(), 1)  # تأكد من أن الكتاب تم حذفه
-
-    def test_filter_books(self):
-        """
-        اختبار الفلترة.
-        """
-        response = self.client.get(self.book_list_url, {"author": "Author One"})
+        self.assertEqual(Book.objects.count(), 1)  # Verify only one book remains
+        
+    def test_filter_books_by_author(self):
+        response = self.client.get(self.book_list_url, {'author': 'Author One'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['author'], "Author One")
-
-    def test_search_books(self):
-        """
-        اختبار البحث.
-        """
-        response = self.client.get(self.book_list_url, {"search": "Book One"})
+        self.assertEqual(response.data[0]['author'], 'Author One')
+        
+    def test_search_books_by_title(self):
+        response = self.client.get(self.book_list_url, {'title': 'Book One'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['title'], "Book One")
+        self.assertEqual(response.data[0]['title'], 'Book One')
 
-    def test_order_books(self):
-        """
-        اختبار الترتيب.
-        """
-        response = self.client.get(self.book_list_url, {"ordering": "publication_year"})
+    def test_order_books_by_publication_year(self):
+        response = self.client.get(self.book_list_url, {'ordering': 'publication_year'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]['publication_year'], 2020)  # تأكد أن الكتاب الأول هو الأقدم
+        self.assertEqual(response.data[0]['title'], 'Book One')  # Oldest book first
+
+
+        
+    def test_unauthenticated_access(self):
+        self.client.logout()
+        response = self.client.get(self.book_list_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)  # Or 401 based on your setup
+
+
 
