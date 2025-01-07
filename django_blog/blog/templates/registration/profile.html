@@ -1,0 +1,9 @@
+<!-- blog/templates/registration/profile.html -->
+
+<h2>Welcome, {{ user.username }}!</h2>
+<form method="POST">
+    {% csrf_token %}
+    <input type="email" name="email" value="{{ user.email }}">
+    <button type="submit">Update Email</button>
+</form>
+
