@@ -33,3 +33,14 @@ urlpatterns = [
     path('comment/<int:pk>/update/', CommentUpdateView.as_view(), name='update-comment'),
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='delete-comment'),
 ]
+
+##########################################################################################
+
+from django.urls import path
+from .views import search_posts, PostsByTagView
+
+urlpatterns = [
+    path('search/', search_posts, name='search-posts'),
+    path('tags/<str:tag>/', PostsByTagView.as_view(), name='posts-by-tag'),
+]
+
