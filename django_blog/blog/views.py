@@ -113,7 +113,7 @@ from .models import Post, Comment
 from .forms import CommentForm
 
 @login_required
-def add_comment(request, post_id):
+def CommentCreateView(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     if request.method == "POST":
         form = CommentForm(request.POST)
