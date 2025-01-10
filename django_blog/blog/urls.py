@@ -43,6 +43,6 @@ from .views import search_posts, PostByTagListView
 
 urlpatterns = [
     path('search/', search_posts, name='search-posts'),
-    path('tags/<str:tag>/', PostByTagListView.as_view(), name='posts-by-tag'),
+    path('tags/<slug:tag_slug>/',views.PostByTagListView.as_view(),name='tags'),
 ]
 
