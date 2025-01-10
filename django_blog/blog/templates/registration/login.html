@@ -1,6 +1,5 @@
-<!-- blog/templates/registration/login.html -->
-
-<form method="POST">
+<h2>Login</h2>
+<form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Login</button>
