@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('', views.home , name='home'),
     path('register/', views.register, name='register'),
     path('login/', views.user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),
@@ -26,21 +27,22 @@ urlpatterns = [
 ##########################################################################################
 
 from django.urls import path
-from .views import add_comment, CommentUpdateView, CommentDeleteView
+from .views import CommentCreateView, CommentUpdateView, CommentDeleteView, CommentListView
 
 urlpatterns = [
     path('post/<int:pk>/comments/new/', views.CommentCreateView.as_view() , name='create_comment'),
     path('comment/<int:pk>/update/', CommentUpdateView.as_view(), name='update-comment'),
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='delete-comment'),
+    path('post/<int:post_id>/comments/', CommentListView.as_view(), name='post-detail'),
 ]
 
 ##########################################################################################
 
 from django.urls import path
-from .views import search_posts, PostsByTagView
+from .views import search_posts, PostByTagListView
 
 urlpatterns = [
     path('search/', search_posts, name='search-posts'),
-    path('tags/<str:tag>/', PostsByTagView.as_view(), name='posts-by-tag'),
+    path('tags/<str:tag>/', PostByTagListView.as_view(), name='posts-by-tag'),
 ]
 

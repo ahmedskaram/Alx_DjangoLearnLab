@@ -1,18 +1,12 @@
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-
-class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']
-
-##########################################################################################
-
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import CustomUserCreationForm
+
+@login_required
+def home(request):
+    posts = Post.objects.all()
+    context = {'posts': posts}
+    return render(request , 'blog/blogs.html' ,  context)
 
 def register(request):
     if request.method == 'POST':
@@ -128,8 +122,9 @@ def CommentCreateView(request, post_id):
     return render(request, 'blog/add_comment.html', {'form': form})
 
 ##########################################################################################
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import UpdateView, DeleteView
+from django.views.generic import UpdateView, DeleteView, ListView
 
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment
@@ -143,6 +138,21 @@ class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         comment = self.get_object()
         return self.request.user == comment.author
+
+from django.views.generic import ListView
+from .models import Post, Comment
+
+##########################################################################################
+
+class CommentListView(ListView):
+    model = Post
+    template_name = 'blog/comment_list.html'
+    context_object_name = 'post'
+
+    def get_queryset(self):
+        post_id = self.kwargs['post_id']
+        return Post.objects.filter(id=post_id)
+
 
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
@@ -176,7 +186,7 @@ def search_posts(request):
 from django.views.generic.list import ListView
 from taggit.models import Tag
 
-class PostsByTagView(ListView):
+class PostByTagListView(ListView):
     model = Post
     template_name = 'blog/posts_by_tag.html'
     context_object_name = 'posts'
