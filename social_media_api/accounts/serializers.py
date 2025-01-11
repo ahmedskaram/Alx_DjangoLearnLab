@@ -2,8 +2,8 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 
-
 class UserSerializer(serializers.ModelSerializer):
+    #bio = serializers.CharField()
     class Meta:
         model = get_user_model()  # Use get_user_model for flexibility
         fields = ['id', 'username', 'email', 'password', 'bio', 'profile_picture', 'followers']
