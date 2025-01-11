@@ -55,7 +55,7 @@ def like_post(request, post_id):
     try:
         post = Post.objects.get(id=post_id)
         # Check if the post is already liked
-        if Like.objects.filter(user=request.user, post=post).exists():
+        if Like.objects.get_or_create(user=request.user, post=post).exists():
             return Response({'message': 'You have already liked this post.'}, status=400)
         
         # Add the like
