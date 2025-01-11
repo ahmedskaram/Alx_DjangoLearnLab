@@ -4,15 +4,15 @@ from django.contrib.auth import get_user_model
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # Define password as a CharField explicitly
+    # Explicitly define password as a CharField
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User
+        model = get_user_model()  # Use get_user_model for flexibility
         fields = ['id', 'username', 'email', 'password', 'bio', 'profile_picture', 'followers']
 
     def create(self, validated_data):
-        # Create a new user using get_user_model
+        # Use get_user_model().objects.create_user for user creation
         user = get_user_model().objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
