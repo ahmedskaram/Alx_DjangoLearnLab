@@ -27,3 +27,13 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),  # Allow access without authentication
 )
 
+##########################################################################################
+
+from django.urls import path
+from .views import user_feed
+
+urlpatterns = [
+    path('feed/', user_feed, name='user_feed'),
+]
+
+##########################################################################################
