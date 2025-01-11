@@ -4,12 +4,10 @@ from django.contrib.auth import get_user_model
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # Explicitly define password as a CharField
-    password = serializers.CharField(write_only=True)
-
     class Meta:
         model = get_user_model()  # Use get_user_model for flexibility
         fields = ['id', 'username', 'email', 'password', 'bio', 'profile_picture', 'followers']
+        extra_kwargs = {'password': {'write_only': True}}  # Specify password as write-only
 
     def create(self, validated_data):
         # Use get_user_model().objects.create_user for user creation
