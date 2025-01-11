@@ -40,9 +40,11 @@ def user_feed(request):
 
 ##########################################################################################
 
+# posts/views.py
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404  # Importing get_object_or_404 for better error handling
 from .models import Post, Like
 from notifications.models import Notification
 from django.contrib.auth import get_user_model
@@ -50,46 +52,44 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])  # Ensure the user is authenticated
 def like_post(request, post_id):
-    try:
-        post = Post.objects.get(id=post_id)
-        # Check if the post is already liked
-        if Like.objects.get_or_create(user=request.user, post=post).exists():
-            return Response({'message': 'You have already liked this post.'}, status=400)
-        
-        # Add the like
-        like = Like.objects.create(user=request.user, post=post)
+    # Using get_object_or_404 instead of Post.objects.get for better error handling
+    post = get_object_or_404(Post, id=post_id)
+    
+    # Check if the user has already liked the post
+    if Like.objects.filter(user=request.user, post=post).exists():
+        return Response({'message': 'You have already liked this post.'}, status=400)
+    
+    # Add the like
+    like = Like.objects.create(user=request.user, post=post)
 
-        # Create a notification
-        notification = Notification.objects.create(
-            recipient=post.author,
-            actor=request.user,
-            verb='liked',
-            target=post
-        )
+    # Create a notification for the post author
+    notification = Notification.objects.create(
+        recipient=post.author,
+        actor=request.user,
+        verb='liked',
+        target=post
+    )
 
-        return Response({'message': f'You liked {post.title}'}, status=200)
-
-    except Post.DoesNotExist:
-        return Response({'error': 'Post not found'}, status=404)
+    return Response({'message': f'You liked {post.title}'}, status=200)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])  # Ensure the user is authenticated
 def unlike_post(request, post_id):
-    try:
-        post = Post.objects.get(id=post_id)
-        like = Like.objects.filter(user=request.user, post=post).first()
-        
-        if not like:
-            return Response({'message': 'You haven\'t liked this post yet.'}, status=400)
-        
-        like.delete()  # Remove the like
+    # Using get_object_or_404 instead of Post.objects.get for better error handling
+    post = get_object_or_404(Post, id=post_id)
+    
+    # Find the like object
+    like = Like.objects.filter(user=request.user, post=post).first()
+    
+    if not like:
+        return Response({'message': 'You haven\'t liked this post yet.'}, status=400)
+    
+    # Remove the like
+    like.delete()
 
-        return Response({'message': f'You unliked {post.title}'}, status=200)
-
-    except Post.DoesNotExist:
-        return Response({'error': 'Post not found'}, status=404)
+    return Response({'message': f'You unliked {post.title}'}, status=200)
 
 
 ##########################################################################################
