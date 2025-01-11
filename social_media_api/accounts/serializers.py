@@ -2,7 +2,12 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 
+
 class UserSerializer(serializers.ModelSerializer):
+
+    # Define password as a CharField explicitly & Can we use it instead extra_kwargs
+    password = serializers.CharField(write_only=True)
+
     #bio = serializers.CharField()
     class Meta:
         model = get_user_model()  # Use get_user_model for flexibility
