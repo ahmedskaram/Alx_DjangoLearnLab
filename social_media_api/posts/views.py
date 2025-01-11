@@ -52,9 +52,9 @@ User = get_user_model()
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])  # Ensure the user is authenticated
-def like_post(request, post_id):
+def like_post(request, pk):
     # Using generics.get_object_or_404 to fetch the post
-    post = generics.get_object_or_404(Post, pk=post_id)
+    post = generics.get_object_or_404(Post, pk=pk)
     
     # Get or create a like object for the user and the post
     like, created = Like.objects.get_or_create(user=request.user, post=post)
@@ -75,9 +75,9 @@ def like_post(request, post_id):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])  # Ensure the user is authenticated
-def unlike_post(request, post_id):
+def unlike_post(request, pk):
     # Using generics.get_object_or_404 to fetch the post
-    post = generics.get_object_or_404(Post, pk=post_id)
+    post = generics.get_object_or_404(Post, pk=pk)
     
     # Find the like object associated with the user and the post
     like = Like.objects.filter(user=request.user, post=post).first()
