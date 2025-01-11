@@ -44,7 +44,7 @@ def user_feed(request):
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404  # Importing get_object_or_404 for better error handling
+from rest_framework import generics  # Importing generics for better object retrieval
 from .models import Post, Like
 from notifications.models import Notification
 from django.contrib.auth import get_user_model
@@ -54,8 +54,8 @@ User = get_user_model()
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])  # Ensure the user is authenticated
 def like_post(request, post_id):
-    # Using get_object_or_404 instead of Post.objects.get for better error handling
-    post = get_object_or_404(Post, id=post_id)
+    # Using generics.get_object_or_404 instead of get_object_or_404 for better error handling
+    post = generics.get_object_or_404(Post, pk=post_id)
     
     # Check if the user has already liked the post
     if Like.objects.filter(user=request.user, post=post).exists():
@@ -77,8 +77,8 @@ def like_post(request, post_id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])  # Ensure the user is authenticated
 def unlike_post(request, post_id):
-    # Using get_object_or_404 instead of Post.objects.get for better error handling
-    post = get_object_or_404(Post, id=post_id)
+    # Using generics.get_object_or_404 instead of get_object_or_404 for better error handling
+    post = generics.get_object_or_404(Post, pk=post_id)
     
     # Find the like object
     like = Like.objects.filter(user=request.user, post=post).first()
