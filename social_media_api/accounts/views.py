@@ -32,10 +32,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 
-Customer  = get_user_model()
+CustomUser  = get_user_model()
 
 class UserListView(generics.GenericAPIView):
-    queryset = Customer.objects.all()
+    queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
