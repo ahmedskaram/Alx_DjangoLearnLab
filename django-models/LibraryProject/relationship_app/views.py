@@ -108,7 +108,7 @@ def edit_book(request, book_id):
     book = Book.objects.get(id=book_id)
     if request.method == 'POST':
         book.title = request.POST.get('title')
-        book.author = Author.objects.get(id=request.POST.get('author_id')):
+        book.author = Author.objects.get(id=request.POST.get('author_id'))
         book.save()
         return redirect('list_books')
     return render(request, 'relationship_app/edit_book.html', {'book': book})
