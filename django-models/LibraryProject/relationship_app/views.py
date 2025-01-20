@@ -84,6 +84,30 @@ def librarian_view(request):
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')
 
+from django.http import HttpResponse
+from django.contrib.auth.decorators import user_passes_test
+
+# تحقق من دور المستخدم
+def check_role(role):
+    def decorator(user):
+        return user.is_authenticated and user.userprofile.role == role
+    return user_passes_test(decorator)
+
+# عرض Admin
+@check_role('Admin')
+def admin_view(request):
+    return HttpResponse("Welcome, Admin!")
+
+# عرض Librarian
+@check_role('Librarian')
+def librarian_view(request):
+    return HttpResponse("Welcome, Librarian!")
+
+# عرض Member
+@check_role('Member')
+def member_view(request):
+    return HttpResponse("Welcome, Member!")
+
 # -------------------------------------------------------------------------------------------
 
 # Custom Permissions
